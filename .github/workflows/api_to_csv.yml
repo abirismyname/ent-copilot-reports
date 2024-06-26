@@ -12,46 +12,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Use Generate CSV Report Action
+        uses: ./src/actions/apiToCsv.ts
         with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests pandas
-
-      - name: Call GitHub REST API and Generate CSV
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          import requests
-          import pandas as pd
-          from io import StringIO
-
-          # New API endpoint
-          url = "https://api.github.com/enterprises/avocado-corp/copilot/billing/seats"
-          headers = {"Authorization": f"token {GITHUB_TOKEN}"}
-          response = requests.get(url, headers=headers)
-          data = response.json()
-
-          # Assuming the JSON structure contains a list of seats
-          # This part may need adjustment based on the actual JSON structure
-          seats = data.get("seats", [])
-
-          # Convert JSON to CSV
-          df = pd.DataFrame(seats)
-          csv_buffer = StringIO()
-          df.to_csv(csv_buffer)
-          csv_content = csv_buffer.getvalue()
-
-          # Save CSV to file
-          with open('seats.csv', 'w') as f:
-              f.write(csv_content)
-
-      - name: Upload CSV as Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: seats-csv
-          path: seats.csv
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ent_name: 'avocado-corp'
+          file_path: 'seats.csv'
