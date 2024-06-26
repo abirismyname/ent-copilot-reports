@@ -52,11 +52,26 @@ function run() {
                     Authorization: `token ${token}`,
                 },
             });
-            const csv = papaparse_1.default.unparse(response.data);
-            const fs = require('fs');
-            fs.writeFileSync(filePath, csv);
-            core.setOutput('csv_path', filePath);
-            console.log(`CSV generated at: ${filePath}`);
+            if (response.data === undefined) {
+                core.setFailed('Error: Fetched data is undefined. Cannot generate CSV.');
+                return;
+            }
+            try {
+                const csv = papaparse_1.default.unparse(response.data);
+                const fs = require('fs');
+                fs.writeFileSync(filePath, csv);
+                core.setOutput('csv_path', filePath);
+                console.log(`CSV generated at: ${filePath}`);
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    core.setFailed(`Error parsing data to CSV: ${error.message}`);
+                }
+                else {
+                    // Handle the case where error is not an Error object
+                    core.setFailed(`Error parsing data to CSV: ${error}`);
+                }
+            }
         }
         catch (error) {
             core.setFailed(`Action failed with error: ${error}`);

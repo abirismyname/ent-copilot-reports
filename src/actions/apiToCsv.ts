@@ -31,7 +31,12 @@ async function run() {
       core.setOutput('csv_path', filePath);
       console.log(`CSV generated at: ${filePath}`);
     } catch (error) {
-      core.setFailed(`Error parsing data to CSV: ${error.message}`);
+      if (error instanceof Error) {
+        core.setFailed(`Error parsing data to CSV: ${error.message}`);
+      } else {
+        // Handle the case where error is not an Error object
+        core.setFailed(`Error parsing data to CSV: ${error}`);
+      }
     }
   } catch (error) {
     core.setFailed(`Action failed with error: ${error}`);
