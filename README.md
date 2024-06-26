@@ -21,8 +21,8 @@ To use this action in your workflow, add the following step:
   uses: abirismyname/ent-copilot-reports@v1
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
-    ent_name: 'your-enterprise-name'
-    file_path: 'path/to/your/report.csv'
+    ent_name: "your-enterprise-name"
+    file_path: "path/to/your/report.csv"
 ```
 
 This will generate a CSV report at the specified file path, using the provided GitHub token for authentication and targeting the specified enterprise.
