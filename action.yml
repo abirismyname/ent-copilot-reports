@@ -14,5 +14,5 @@ outputs:
   csv_path:
     description: 'Full path to the generated CSV file.'
 runs:
-  using: 'node12'
+  using: 'node20'
   main: 'dist/index.js'
