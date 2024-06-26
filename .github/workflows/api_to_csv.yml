@@ -1,0 +1,50 @@
+name: API to CSV
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Runs at midnight every day
+  workflow_dispatch:
+
+jobs:
+  call_api_and_generate_csv:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests pandas
+
+      - name: Call GitHub REST API and Generate CSV
+        run: |
+          import requests
+          import pandas as pd
+          from io import StringIO
+
+          # Replace 'OWNER/REPO' with your repository's owner and name
+          url = "https://api.github.com/repos/OWNER/REPO/issues"
+          response = requests.get(url)
+          issues = response.json()
+
+          # Convert JSON to CSV
+          df = pd.DataFrame(issues)
+          csv_buffer = StringIO()
+          df.to_csv(csv_buffer)
+          csv_content = csv_buffer.getvalue()
+
+          # Save CSV to file
+          with open('issues.csv', 'w') as f:
+              f.write(csv_content)
+
+      - name: Upload CSV as Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: issues-csv
+          path: issues.csv
