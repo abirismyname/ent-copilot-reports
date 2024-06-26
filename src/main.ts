@@ -2,8 +2,9 @@ import * as core from "@actions/core";
 import * as github from "@actions/github";
 import axios from "axios";
 import Papa from "papaparse";
+import fs from "fs";
 
-export default async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     const token = core.getInput("token", { required: true });
     const entName = core.getInput("ent_name", { required: true });
