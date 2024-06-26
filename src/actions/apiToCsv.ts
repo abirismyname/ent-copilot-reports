@@ -18,12 +18,21 @@ async function run() {
       },
     });
 
-    const csv = Papa.unparse(response.data);
-    const fs = require('fs');
-    fs.writeFileSync(filePath, csv);
+    if (response.data === undefined) {
+      core.setFailed('Error: Fetched data is undefined. Cannot generate CSV.');
+      return;
+    }
 
-    core.setOutput('csv_path', filePath);
-    console.log(`CSV generated at: ${filePath}`);
+    try {
+      const csv = Papa.unparse(response.data);
+      const fs = require('fs');
+      fs.writeFileSync(filePath, csv);
+
+      core.setOutput('csv_path', filePath);
+      console.log(`CSV generated at: ${filePath}`);
+    } catch (error) {
+      core.setFailed(`Error parsing data to CSV: ${error.message}`);
+    }
   } catch (error) {
     core.setFailed(`Action failed with error: ${error}`);
   }
